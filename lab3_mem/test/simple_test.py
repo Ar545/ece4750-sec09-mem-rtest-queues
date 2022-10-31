@@ -71,6 +71,11 @@ def test( cmdline_opts ):
   msgs = [
     #    type  opq  addr    len data                type  opq  test len data
     req( 'in', 0x0, 0x1000, 0, 0xdeadbeef ), resp( 'in',  0x0, 0,   0,  0          ),
+    req( 'rd', 0x1, 0x1000, 0, 0          ), resp( 'rd',  0x1, 0,   0,  0xdeadbeef ),
+    req( 'in', 0x2, 0x1004, 0, 0xdeadcafe ), resp( 'in',  0x2, 0,   0,  0          ),
+    req( 'rd', 0x3, 0x1004, 0, 0          ), resp( 'rd',  0x3, 0,   0,  0xdeadcafe ),
+    req( 'wr', 0x4, 0x1000, 0, 0xdeaddead ), resp( 'wr',  0x4, 0,   0,  0          ),
+    req( 'rd', 0x5, 0x1000, 0, 0          ), resp( 'rd',  0x5, 0,   0,  0xdeaddead ),
   ]
 
   model = TestHarness( CacheFL(), msgs[::2], msgs[1::2] )

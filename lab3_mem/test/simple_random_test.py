@@ -82,6 +82,10 @@ def data_1KB():
 
 def random_msgs():
 
+  ref_mem = []
+  for i in range(256):
+    ref_mem += [0xabcd1000+i*4]
+
   # Create list of 100 random request messages with the corresponding
   # correct response message.
 
@@ -90,7 +94,7 @@ def random_msgs():
 
     # Choose a random index to read
 
-    idx = randint(0,256)
+    idx = randint(0,256-1)
 
     # Create address and data. Notice how we turn the random index into
     # an actual address. We multiply the index by four and then add it to
@@ -98,13 +102,29 @@ def random_msgs():
     # data from the address.
 
     addr = 0x00001000+idx*4
-    data = 0xabcd1000+idx*4
+    # data = 0xabcd1000+idx*4
+
+    # # flip a coin to decide if we want to do a read or a write
+    # is_write = randint(0,1)
+    # is_write_str = 'wr' if is_write else 'rd'
+    # req_data = data if is_write else 0
+    # resp_data = data if not is_write else 0
+
+    # msgs.extend([
+    #   req( is_write_str, i, addr, 0, req_data ), resp( is_write_str, i, 0, 0, resp_data ),
+    # ])
 
     # Create a request/response pair.
-
-    msgs.extend([
-      req( 'rd', i, addr, 0, 0 ), resp( 'rd', i, 0, 0, data ),
-    ])
+    if randint(0,1) == 0:
+      msgs.extend([
+        req( "rd", i, addr, 0, 0 ), resp( "rd", i, 0, 0, ref_mem[idx] ),
+      ])
+    else:
+      data = randint(0,0xffffffff)
+      ref_mem[idx] = data
+      msgs.extend([
+        req( "wr", i, addr, 0, data ), resp( "wr", i, 0, 0, 0 ),
+      ])
 
   return msgs
 
